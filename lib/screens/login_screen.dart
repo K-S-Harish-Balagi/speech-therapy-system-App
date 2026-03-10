@@ -20,16 +20,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void handleLogin() async {
 
+    if (patientIdController.text.isEmpty || passController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
     setState(() => isLoading = true);
 
     UserModel user = UserModel(
-      patientId: patientIdController.text,
-      password: passController.text,
+      patientId: patientIdController.text.trim(),
+      password: passController.text.trim(),
     );
 
     bool success = await AuthService.login(user);
 
-    if(!mounted) return;
+    if (!mounted) return;
 
     setState(() => isLoading = false);
 
@@ -131,14 +138,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 20),
-                //REGISTER
+
+                /// REGISTER
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () => Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => const RegisterScreen(),
-                    )),
-                    child: Text("Register"),
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
+                    ),
+                    child: const Text("Register"),
                   ),
                 ),
 

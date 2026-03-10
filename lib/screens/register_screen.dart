@@ -61,6 +61,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  void removeFile() {
+    setState(() {
+      idDoc = null;
+    });
+  }
   /// REGISTER USER
   Future<void> registerUser() async {
 
@@ -261,7 +266,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
 
+                if (idDoc != null) ...[
+                  const SizedBox(height: 10),
+                  Text(idDoc!.name),
+                  ElevatedButton(
+                    onPressed: removeFile,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red, // button background
+                      foregroundColor: Colors.white, // text color
+                    ),
+                    child: const Text("Remove Document"),
+                  ),
+                ],
+
                 const SizedBox(height: 25),
+
 
                 /// REGISTER BUTTON
                 SizedBox(
