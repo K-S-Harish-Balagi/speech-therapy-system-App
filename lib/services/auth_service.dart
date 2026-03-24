@@ -90,4 +90,24 @@ class AuthService {
 
   }
 
+  /// GET PROFILE
+  static Future<Map<String, dynamic>> getProfile() async {
+    final token = await getToken();
+    final url = Uri.parse("${ApiConfig.baseUrl}/profile");
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
 }
