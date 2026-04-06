@@ -41,6 +41,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     setState(() => _isLoading = true);
     // TODO: await AuthService.resetPassword(widget.patientId, _newPassController.text);
     await Future.delayed(const Duration(seconds: 1));
+
     if (!mounted) return;
     setState(() => _isLoading = false);
 
