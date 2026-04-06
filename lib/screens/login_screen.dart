@@ -14,7 +14,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _patientIdController = TextEditingController();
+  final _patientIdController = TextEditingController(text: 'PAT23377');
+  // final _patientIdController = TextEditingController();
   final _passController      = TextEditingController();
   bool _isLoading   = false;
   bool _obscurePass = true;
