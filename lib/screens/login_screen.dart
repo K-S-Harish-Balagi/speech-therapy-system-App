@@ -5,6 +5,8 @@ import '../theme/app_widgets.dart';
 import 'forget_pwd_screen.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
+import 'therapist_screen.dart';
+import 'supervisor_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,8 +16,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _patientIdController = TextEditingController(text: 'PAT23377');
-  // final _patientIdController = TextEditingController();
+  final _patientIdController = TextEditingController();
   final _passController      = TextEditingController();
   bool _isLoading   = false;
   bool _obscurePass = true;
@@ -42,34 +43,47 @@ class _LoginScreenState extends State<LoginScreen> {
       password:  _passController.text.trim(),
     );
 
-    final success = await AuthService.login(user);
+    final role = await AuthService.login(user);
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    if (success) {
+    if (role == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid ID or Password')),
+      );
+      return;
+    }
+
+    final id = _patientIdController.text.trim();
+
+    if (role == "therapist") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => TherapistScreen(therapistId: id)),
+      );
+    } else if (role == "supervisor") {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => SupervisorScreen(supervisorId: id)),
+      );
+    } else {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid Patient ID or Password')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // AuthLayout owns the Scaffold — no double-Scaffold issue.
-    // On mobile it fills the screen. On web (>500px) it shows a centred card.
     return AuthLayout(
       title: 'Welcome back',
-      subtitle: 'Sign in to your patient account',
+      subtitle: 'Sign in to your account',
       children: [
         TextField(
           controller: _patientIdController,
           decoration: const InputDecoration(
-            labelText: 'Patient ID',
+            labelText: 'ID',
             prefixIcon: Icon(Icons.badge_outlined),
           ),
         ),
@@ -89,14 +103,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        // Forgot password — restored and wired
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (_) => const ForgotPasswordScreen()),
+              MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
             ),
             child: const Text('Forgot Password?'),
           ),
