@@ -4,6 +4,8 @@ import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'view_report_screen.dart';
 import 'send_report_screen.dart';
+import 'therapist_schedule_screen.dart';
+import 'my_patients_screen.dart';
 
 class TherapistScreen extends StatelessWidget {
   final String therapistId;
@@ -13,7 +15,6 @@ class TherapistScreen extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     await AuthService.logout();
     if (!context.mounted) return;
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -47,75 +48,75 @@ class TherapistScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _header(),
-
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.medical_services,
+                      color: Colors.white70, size: 26),
+                  SizedBox(height: 10),
+                  Text(
+                    'Welcome Therapist!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Manage your patients and schedule',
+                    style: TextStyle(color: Colors.white70, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 24),
-
             Text('Quick actions', style: AppText.sectionLabel),
             const SizedBox(height: 12),
-
+            _ActionTile(
+              icon: Icons.people_outline,
+              label: 'My Patients',
+              description: 'See your assigned patients',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const MyPatientsScreen())),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.calendar_today_outlined,
+              label: 'My Schedule',
+              description: 'View all your appointments',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const TherapistScheduleScreen())),
+            ),
+            const SizedBox(height: 10),
             _ActionTile(
               icon: Icons.visibility_outlined,
               label: 'View Reports',
               description: 'See patient reports',
-              onTap: () {
-                Navigator.push(
-                  context,
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(
-                    builder: (_) => const ViewReportScreen(),
-                  ),
-                );
-              },
+                      builder: (_) => const ViewReportScreen())),
             ),
-
-            const SizedBox(height: 12),
-
+            const SizedBox(height: 10),
             _ActionTile(
               icon: Icons.upload_file_outlined,
               label: 'Send Report',
               description: 'Upload and send report',
-              onTap: () {
-                Navigator.push(
-                  context,
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(
-                    builder: (_) => const SendReportScreen(),
-                  ),
-                );
-              },
+                      builder: (_) => const SendReportScreen())),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _header() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.medical_services, color: Colors.white70, size: 26),
-          SizedBox(height: 10),
-          Text(
-            'Welcome Therapist!',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            'Manage patient reports',
-            style: TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-        ],
       ),
     );
   }
@@ -129,9 +130,9 @@ class _ActionTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconData icon;
-  final String label;
-  final String description;
+  final IconData     icon;
+  final String       label;
+  final String       description;
   final VoidCallback onTap;
 
   @override

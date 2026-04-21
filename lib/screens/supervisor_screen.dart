@@ -3,6 +3,7 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'view_report_screen.dart';
+import 'my_therapists_screen.dart';
 
 class SupervisorScreen extends StatelessWidget {
   final String supervisorId;
@@ -12,7 +13,6 @@ class SupervisorScreen extends StatelessWidget {
   Future<void> _logout(BuildContext context) async {
     await AuthService.logout();
     if (!context.mounted) return;
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -47,24 +47,25 @@ class SupervisorScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _header(),
-
             const SizedBox(height: 24),
-
             Text('Quick actions', style: AppText.sectionLabel),
             const SizedBox(height: 12),
-
+            _ActionTile(
+              icon: Icons.people_outline,
+              label: 'My Therapists',
+              description: 'View your assigned therapists',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const MyTherapistsScreen())),
+            ),
+            const SizedBox(height: 10),
             _ActionTile(
               icon: Icons.visibility_outlined,
               label: 'View Reports',
               description: 'Review all reports',
-              onTap: () {
-                Navigator.push(
-                  context,
+              onTap: () => Navigator.push(context,
                   MaterialPageRoute(
-                    builder: (_) => const ViewReportScreen(),
-                  ),
-                );
-              },
+                      builder: (_) => const ViewReportScreen())),
             ),
           ],
         ),
@@ -83,7 +84,8 @@ class SupervisorScreen extends StatelessWidget {
       child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.admin_panel_settings, color: Colors.white70, size: 26),
+          Icon(Icons.admin_panel_settings,
+              color: Colors.white70, size: 26),
           SizedBox(height: 10),
           Text(
             'Welcome Supervisor!',
@@ -112,9 +114,9 @@ class _ActionTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconData icon;
-  final String label;
-  final String description;
+  final IconData     icon;
+  final String       label;
+  final String       description;
   final VoidCallback onTap;
 
   @override

@@ -7,7 +7,7 @@ import '../models/user_model.dart';
 
 class AuthService {
 
-  /// LOGIN — returns role string or null on failure
+  /// LOGIN
   static Future<String?> login(UserModel user) async {
     final prefix = (user.patientId ?? "").substring(0, 3).toUpperCase();
 
@@ -30,7 +30,6 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
       if (data["success"] == true) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("token",     data["token"]);
@@ -68,8 +67,8 @@ class AuthService {
       );
     }
 
-    var response = await request.send();
-    var respStr  = await response.stream.bytesToString();
+    final response = await request.send();
+    final respStr  = await response.stream.bytesToString();
     return jsonDecode(respStr);
   }
 
@@ -111,7 +110,7 @@ class AuthService {
     return jsonDecode(response.body);
   }
 
-  /// GET THERAPIST INFO (includes supervisorId)
+  /// GET THERAPIST INFO
   static Future<Map<String, dynamic>> getTherapistMe() async {
     final token = await getToken();
     final url   = Uri.parse("${ApiConfig.baseUrl}/therapist-me");
@@ -131,10 +130,12 @@ class AuthService {
     return jsonDecode(response.body);
   }
 
-  /// GET SUPERVISOR NAME BY ID
-  static Future<Map<String, dynamic>> getSupervisorName(String supervisorId) async {
+  /// GET SUPERVISOR NAME
+  static Future<Map<String, dynamic>> getSupervisorName(
+      String supervisorId) async {
     final token = await getToken();
-    final url   = Uri.parse("${ApiConfig.baseUrl}/supervisor-name/$supervisorId");
+    final url =
+    Uri.parse("${ApiConfig.baseUrl}/supervisor-name/$supervisorId");
 
     final response = await http.get(
       url,
@@ -148,13 +149,82 @@ class AuthService {
       return jsonDecode(response.body);
     }
 
-    return {"name": supervisorId}; // fallback to ID if fetch fails
+    return {"name": supervisorId};
   }
 
-  /// GET REPORTS
-  static Future<Map<String, dynamic>> getReports() async {
+  /// GET MY THERAPIST (patient)
+  static Future<Map<String, dynamic>> getMyTherapist() async {
     final token = await getToken();
-    final url   = Uri.parse("${ApiConfig.baseUrl}/get-reports");
+    final url   = Uri.parse("${ApiConfig.baseUrl}/my-therapist");
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  /// GET AVAILABLE SLOTS
+  static Future<Map<String, dynamic>> getAvailableSlots({
+    required String therapistId,
+    required String date,
+  }) async {
+    final token = await getToken();
+    final url   = Uri.parse(
+        "${ApiConfig.baseUrl}/available-slots"
+            "?therapistId=$therapistId&date=$date");
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  /// BOOK APPOINTMENT
+  static Future<Map<String, dynamic>> bookAppointment({
+    required String date,
+    required String timeSlot,
+  }) async {
+    final token = await getToken();
+    final url   = Uri.parse("${ApiConfig.baseUrl}/appointment");
+
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer $token",
+      },
+      body: jsonEncode({"date": date, "timeSlot": timeSlot}),
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  /// GET APPOINTMENTS (patient → own, therapist → all theirs)
+  static Future<Map<String, dynamic>> getAppointments() async {
+    final token = await getToken();
+    final url   = Uri.parse("${ApiConfig.baseUrl}/appointments");
 
     final response = await http.get(
       url,
@@ -175,6 +245,26 @@ class AuthService {
   static Future<Map<String, dynamic>> getMyPatients() async {
     final token = await getToken();
     final url   = Uri.parse("${ApiConfig.baseUrl}/my-patients");
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
+  /// GET REPORTS
+  static Future<Map<String, dynamic>> getReports() async {
+    final token = await getToken();
+    final url   = Uri.parse("${ApiConfig.baseUrl}/get-reports");
 
     final response = await http.get(
       url,
@@ -215,5 +305,25 @@ class AuthService {
     final respStr  = await response.stream.bytesToString();
     return jsonDecode(respStr);
   }
-}
 
+  /// GET MY THERAPISTS (supervisor)
+  static Future<Map<String, dynamic>> getMyTherapists() async {
+    final token = await getToken();
+    final url   = Uri.parse("${ApiConfig.baseUrl}/my-therapists");
+
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      return {"success": false, "expired": true};
+    }
+
+    return jsonDecode(response.body);
+  }
+
+}

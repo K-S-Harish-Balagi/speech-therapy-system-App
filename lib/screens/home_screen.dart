@@ -3,6 +3,8 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'login_screen.dart';
 import 'profile_screen.dart';
+import 'book_appointment_screen.dart';
+import 'appointments_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,7 +45,6 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Greeting banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
@@ -82,10 +83,26 @@ class HomeScreen extends StatelessWidget {
               icon: Icons.person_outline,
               label: 'My Profile',
               description: 'View your details & documents',
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              ),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen())),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.calendar_month_outlined,
+              label: 'Book Appointment',
+              description: 'Schedule a session with your therapist',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const BookAppointmentScreen())),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.event_note_outlined,
+              label: 'My Appointments',
+              description: 'View your upcoming sessions',
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(
+                      builder: (_) => const AppointmentsScreen())),
             ),
           ],
         ),
